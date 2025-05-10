@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Индекс Moex{% endblock %}
+
+{% block content %}
+    <h1>Индекс Moex</h1>
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <form method="post" action="/loadmoex/">
+        {% csrf_token %}
+        <button type="submit" style="width: 200px">Загрузить данные MOEX</button>
+    </form>
+    {% if data %}
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Дата торгов</th>
+                    <th>Тикер</th>
+                    <th>Название</th>
+                    <th>Вес (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data %}
+                <tr>
+                    <td>{{ item.trade_date }}</td>
+                    <td>{{ item.ticker }}</td>
+                    <td>{{ item.short_name }}</td>
+                    <td>{{ item.weight|floatformat:"2" }}%</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">Нет данных</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="message error">Нет данных для отображения, загрузите данные</div>
+    {% endif %}
+{% endblock %}
