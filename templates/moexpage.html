@@ -29,7 +29,7 @@
             <tbody>
                 {% for item in data %}
                 <tr>
-                    <td>{{ item.trade_date }}</td>
+                    <td>{{ item.trade_date|date:"d.m.Y" }}</td>
                     <td>{{ item.ticker }}</td>
                     <td>{{ item.short_name }}</td>
                     <td>{{ item.weight|floatformat:"2" }}%</td>

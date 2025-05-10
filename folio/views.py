@@ -6,7 +6,8 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 from .hfunctions import *
-from .models import MoexIndexData
+from .models import MoexIndexData, Folio
+from .forms import FolioForm
 
 def HomePage(request):
     logedusername = "Unknown user"
@@ -26,7 +27,8 @@ def LoginRequest(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')
+            next_url = request.POST.get('next') or request.GET.get('next') or '/'
+            return redirect(next_url)
         else:
             messages.error(request, 'Неверное имя пользователя или пароль.')
     else:
@@ -36,8 +38,25 @@ def MoexPage(request):
     data = MoexIndexData.objects.all().order_by('-weight')
     return render(request, 'moexpage.html', {'data': data})
 
+@login_required
 def PortfoliosPage(request):
-    return render(request, 'folios.html')
+    folios = Folio.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'folios.html', {'folios': folios})
+
+@login_required
+def NewFolioPage(request):
+    if request.method == 'POST':
+        form = FolioForm(request.POST)
+        if form.is_valid():
+            folio = form.save(commit=False)
+            folio.user = request.user
+            folio.save()
+            messages.success(request, 'Портфель успешно создан!')
+            return redirect('folios')
+    else:
+        form = FolioForm()
+
+    return render(request, 'newfolio.html', {'form': form})
 
 @login_required
 @csrf_protect

@@ -23,6 +23,7 @@ body {
 .sidebar h2 {
     font-size: 1.4em;
     margin-bottom: 20px;
+    color: #ecf0f1;
 }
 
 .sidebar nav ul {
@@ -69,6 +70,7 @@ a.button {
     text-decoration: none;
     cursor: pointer;
     transition: background-color 0.3s ease;
+
 }
 
 button:hover,
@@ -163,6 +165,7 @@ button[type="submit"] {
 
 /* === Таблица === */
 .data-table {
+    margin-top: 10px;
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
