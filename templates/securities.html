@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Ценные бумаги{% endblock %}
+
+{% block content %}
+    <h1>Ценные бумаги</h1>
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" action="/loadsecurities/">
+        {% csrf_token %}
+        <button type="submit" class="btn-submit" style="width: 200px">Загрузить данные ценных бумаг</button>
+    </form>
+
+    {% if data %}
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Тикер</th>
+                    <th>Краткое название</th>
+                    <th>Предыдущая цена</th>
+                    <th>Размер лота</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data %}
+                <tr>
+                    <td>{{ item.secid }}</td>
+                    <td>{{ item.shortname }}</td>
+                    <td>{{ item.prevprice|floatformat:"2" }} р.</td>
+                    <td>{{ item.lotsize }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">Нет данных для отображения</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="message error">Нет данных для отображения, загрузите данные</div>
+    {% endif %}
+
+{% endblock %}

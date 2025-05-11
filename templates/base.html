@@ -15,6 +15,7 @@
                 <ul>
                     <li><a href="{% url 'home' %}">Главная</a></li>
                     <li><a href="{% url 'moex' %}">Moex индекс</a></li>
+                    <li><a href="{% url 'securities' %}">Ценные бумаги</a></li>
                     <li><a href="{% url 'folios' %}">Портфели</a></li>
                     {% if user.is_authenticated %}
                         <li><a href="{% url 'logout' %}">Выход</a> - {{ user.username }}</li>

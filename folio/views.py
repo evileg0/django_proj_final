@@ -35,8 +35,12 @@ def LoginRequest(request):
         return render(request, 'login.html')
 
 def MoexPage(request):
-    data = MoexIndexData.objects.all().order_by('-weight')
-    return render(request, 'moexpage.html', {'data': data})
+    moex_data = MoexIndexData.objects.all().order_by('-weight')
+    return render(request, 'moexpage.html', {'data': moex_data})
+
+def SecuritiesPage(request):
+    securities_data = SecuritiesIndexData.objects.all().order_by('shortname')
+    return render(request, 'securities.html', {'data': securities_data})
 
 @login_required
 def PortfoliosPage(request):
@@ -71,3 +75,15 @@ def LoadMoexRequest(request):
         return redirect('moex')
     return redirect('moex')
 
+@login_required
+@csrf_protect
+def LoadSecuritiesRequest(request):
+    if request.method == 'POST':
+        securitiesdatajson = getsecuritiesindex()
+        if securitiesdatajson:
+            save_securities_data_from_json(securitiesdatajson)
+            messages.success(request, 'Данные успешно загружены!')
+        else:
+            messages.error(request, 'Ошибка при загрузке данных.')
+        return redirect('securities')
+    return redirect('securities')
