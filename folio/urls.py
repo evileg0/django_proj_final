@@ -9,6 +9,7 @@ urlpatterns = [
     path('moex/', MoexPage, name='moex'),
     path('securities/', SecuritiesPage, name='securities'),
     path('folios/', PortfoliosPage, name='folios'),
+    path('folios/<int:folio_id>/', FolioDetails, name='view_folio'),
     path('newfolio/', NewFolioPage, name='new_folio'),
     path('login/', LoginRequest, name='login'),
     path('logout/', LogOutRequest, name='logout'),

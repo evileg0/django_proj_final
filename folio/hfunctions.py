@@ -60,7 +60,6 @@ def getsecuritiesindex():
                 'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json?iss.meta=off&iss'
                 '.only=securities')
         data = resp.json()
-        print(data)
         result = data
     except Exception as error:
         print("Ошибка загрузки индекса")
@@ -75,29 +74,42 @@ def save_securities_data_from_json(data_json):
         print("Нет данных для сохранения")
         return
 
-    SecuritiesIndexData.objects.all().delete()
+    securities_to_update = {}
+    secids_in_json = set()
 
-    objects_to_create = []
     for row in rows:
         try:
-            secid = row[0]              # SECID
-            shortname = row[2]          # SHORTNAME
-            prevprice = float(row[3])   # PREVPRICE
-            lotsize = int(row[4])       # LOTSIZE
+            secid = row[0]
+            shortname = row[2]
+            prevprice = float(row[3])
+            lotsize = int(row[4])
 
-            obj = SecuritiesIndexData(
-                secid=secid,
-                shortname=shortname,
-                prevprice=prevprice,
-                lotsize=lotsize
-            )
-            objects_to_create.append(obj)
+            secids_in_json.add(secid)
+
+            securities_to_update[secid] = {
+                'shortname': shortname,
+                'prevprice': prevprice,
+                'lotsize': lotsize,
+            }
+
         except Exception as e:
             print(f"Ошибка при обработке строки {row}: {e}")
 
-    # Массовое добавление записей
-    if objects_to_create:
-        SecuritiesIndexData.objects.bulk_create(objects_to_create)
-        print(f"Успешно загружено {len(objects_to_create)} записей")
-    else:
-        print("Не удалось обработать данные для загрузки")
+    created = []
+    updated = []
+
+    for secid, data in securities_to_update.items():
+        obj, is_created = SecuritiesIndexData.objects.update_or_create(
+            secid=secid,
+            defaults=data
+        )
+        if is_created:
+            created.append(obj)
+        else:
+            updated.append(obj)
+
+    print(f"Создано: {len(created)} записей")
+    print(f"Обновлено: {len(updated)} записей")
+
+    # Очистка от записей, которых нет в json, пока уберем, может пригодится
+    #SecuritiesIndexData.objects.exclude(secid__in=secids_in_json).delete()

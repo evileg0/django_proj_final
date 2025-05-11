@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Folio, SecuritiesIndexData, MoexIndexData, MoexIndexData
+from .models import Folio, SecuritiesIndexData, MoexIndexData, MoexIndexData, FolioSecurity
 
 @admin.register(Folio)
 class FolioAdmin(admin.ModelAdmin):
@@ -19,3 +19,7 @@ class MoexIndexDataAdmin(admin.ModelAdmin):
     list_display = ('index_id', 'ticker', 'short_name', 'trade_date', 'weight', 'trading_session')
     search_fields = ('ticker', 'short_name', 'sec_id')
     ordering = ('ticker',)
+
+@admin.register(FolioSecurity)
+class FolioSecurityAdmin(admin.ModelAdmin):
+    list_display = ('folio', 'security', 'quantity')

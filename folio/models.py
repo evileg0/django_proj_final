@@ -42,3 +42,11 @@ class Folio(models.Model):
     class Meta:
         verbose_name = 'Портфель'
         verbose_name_plural = 'Портфели'
+
+class FolioSecurity(models.Model):
+    folio = models.ForeignKey(Folio, on_delete=models.CASCADE, related_name='securities')
+    security = models.ForeignKey(SecuritiesIndexData, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.security.secid} x {self.quantity}"
