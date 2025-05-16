@@ -2,12 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic.base import HttpResponsePermanentRedirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 from .hfunctions import *
 from .models import MoexIndexData, Folio, SecuritiesIndexData, FolioSecurity
 from .forms import FolioForm
+import json
 
 def HomePage(request):
     logedusername = "Unknown user"
@@ -133,3 +134,43 @@ def FolioDetails(request, folio_id):
         'total_value': round(total_value, 2),
     }
     return render(request, 'folio_details.html', context)
+
+@login_required
+def UpdateSecurityQuantityInFolioRequest(request, folio_id):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            security_id = data.get('security_id')
+            quantity = int(data.get('quantity', 0))
+
+            folio = get_object_or_404(Folio, id=folio_id, user=request.user)
+
+            if quantity <= 0:
+                FolioSecurity.objects.filter(folio=folio, security_id=security_id).delete()
+                return JsonResponse({'success': True})
+            else:
+                FolioSecurity.objects.update_or_create(
+                    folio=folio,
+                    security_id=security_id,
+                    defaults={'quantity': quantity}
+                )
+                return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Неверный запрос'})
+
+
+@login_required
+def DeleteSecurityFromFolioRequest(request, folio_id):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            security_id = data.get('security_id')
+
+            folio = get_object_or_404(Folio, id=folio_id, user=request.user)
+            FolioSecurity.objects.filter(folio=folio, security_id=security_id).delete()
+
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Неверный запрос'})

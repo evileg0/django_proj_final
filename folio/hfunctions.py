@@ -62,7 +62,7 @@ def getsecuritiesindex():
         data = resp.json()
         result = data
     except Exception as error:
-        print("Ошибка загрузки индекса")
+        print("Ошибка загрузки списка ЦБ")
         print(error)
         return False
     return result
