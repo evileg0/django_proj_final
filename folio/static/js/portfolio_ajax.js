@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (quantity === 0) {
                         row.remove();
                     }
+                    window.location.reload();
                 } else {
                     alert('Ошибка: ' + (data.error || 'Не удалось сохранить'));
                 }
@@ -59,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 if (data.success) {
                     row.remove();
+                    window.location.reload();
                 } else {
                     alert('Ошибка при удалении');
                 }

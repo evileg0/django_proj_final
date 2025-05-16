@@ -19,7 +19,7 @@
                 <tbody>
                     {% for folio in folios %}
                     <tr>
-                        <td><a href="{% url 'view_folio' folio.id %}">{{ folio.name }}</a></td>
+                        <td><a class="table-button" href="{% url 'view_folio' folio.id %}">{{ folio.name }}</a></td>
                         <td>{{ folio.description|default:"—" }}</td>
                         <td>{{ folio.created_at|date:"d.m.Y H:i" }}</td>
                     </tr>
