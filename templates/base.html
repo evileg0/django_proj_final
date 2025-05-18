@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+{% load static %}
+<link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}" >
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Мой сайт{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>Меню</h2>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'home' %}">Главная</a></li>
+                    <li><a href="{% url 'moex' %}">Moex индекс</a></li>
+                    <li><a href="{% url 'securities' %}">Ценные бумаги</a></li>
+                    <li><a href="{% url 'folios' %}">Портфели</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'logout' %}">Выход</a> - {{ user.username }}</li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Войти</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content">
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+</body>
+</html>

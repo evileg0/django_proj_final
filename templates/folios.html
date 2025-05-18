@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Индекс Moex{% endblock %}
+
+{% block content %}
+
+    <h1>Портфели</h1>
+        <a href="{% url 'new_folio' %}" class="button">Создать новый портфель</a>
+    {% if folios %}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th>Дата создания</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for folio in folios %}
+                    <tr>
+                        <td><a class="table-button" href="{% url 'view_folio' folio.id %}">{{ folio.name }}</a></td>
+                        <td>{{ folio.description|default:"—" }}</td>
+                        <td>{{ folio.created_at|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>У вас пока нет созданных портфелей.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+{% load portfolio_extras %}
+
+{% block title %}{{ folio.name }} — Портфель{% endblock %}
+
+{% block content %}
+<h1>{{ folio.name }}</h1>
+<p>{{ folio.description|default:"Без описания" }}</p>
+{% if total_value %}
+    <p><strong>Общая стоимость портфеля:</strong> {{ total_value|floatformat:"2" }} ₽</p>
+{% else %}
+    <p><strong>Общая стоимость портфеля:</strong> —</p>
+{% endif %}
+<hr>
+<div style="width: 400px">
+<h2>Добавить ценную бумагу</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="secid">Выберите Тикер:</label>
+        <select name="secid" id="secid" required>
+            {% for sec in available_securities %}
+                <option value="{{ sec.secid }}">{{ sec.secid }} — {{ sec.shortname }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="quantity">Количество:</label>
+        <input type="number" name="quantity" id="quantity" min="1" value="1" required>
+    </div>
+    <button type="submit">Добавить</button>
+</form>
+</div>
+
+<hr>
+<div style="display: none;" data-csrf="{{ csrf_token }}" data-folio-id="{{ folio.id }}"></div>
+<h2>Состав портфеля</h2>
+{% if securities_in_folio %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Тикер</th>
+                <th>Название</th>
+                <th>Количество</th>
+                <th>Цена (руб.)</th>
+                <th>Стоимость (руб.)</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody id="portfolio-body">
+            {% for item in securities_in_folio %}
+            <tr data-security-id="{{ item.security.id }}">
+                <td>{{ item.security.secid }}</td>
+                <td>{{ item.security.shortname }}</td>
+                <td>
+                    <input type="number" class="quantity-input"
+                       value="{{ item.quantity }}" min="0"
+                       style="width: 80px;"
+                    />
+                </td>
+                <td>
+                    {% if item.security %}
+                        {{ item.security.prevprice|floatformat:"2" }} ₽
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+                <td>
+                    {% if item.security %}
+                        {{ item.security.prevprice|mul:item.quantity|floatformat:"2" }} ₽
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+                <td>
+                    <button class="btn-save">Сохранить</button>
+                    <button class="btn-delete">Удалить</button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">Пустой портфель</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+<p>Портфель пока пуст.</p>
+{% endif %}
+
+<script src="{% static 'js/portfolio_ajax.js' %}"></script>
+{% endblock %}
