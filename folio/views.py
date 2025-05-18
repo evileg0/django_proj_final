@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 from .hfunctions import *
 from .models import MoexIndexData, Folio, SecuritiesIndexData, FolioSecurity
-from .forms import FolioForm
+from .forms import FolioForm, RegisterForm
 import json
 
 def HomePage(request):
@@ -34,6 +34,18 @@ def LoginRequest(request):
             messages.error(request, 'Неверное имя пользователя или пароль.')
     else:
         return render(request, 'login.html')
+
+def RegisterRequest(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Регистрация прошла успешно! Теперь вы можете войти.")
+            return redirect('login')
+    else:
+        form = RegisterForm()
+
+    return render(request, 'register.html', {'form': form})
 
 def MoexPage(request):
     moex_data = MoexIndexData.objects.all().order_by('-weight')

@@ -76,6 +76,7 @@ a.button {
 button:hover,
 a.button:hover {
     background-color: #2980b9;
+    color: white;
 }
 
 /* === Форма входа === */
@@ -125,6 +126,17 @@ button[type="submit"] {
     text-align: center;
     border-radius: 4px;
     margin-bottom: 15px;
+}
+
+a {
+    color: #2980b9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+a:hover {
+    color: #2c3e50;
 }
 
 /* === Сообщения === */
@@ -208,4 +220,5 @@ button[type="submit"] {
 
 .table-button:hover {
     background-color: #2980b9;
+    color: white;
 }
